@@ -1,0 +1,226 @@
+#include <GL/glut.h>
+#include <math.h>
+#include <stdlib.h>
+
+float angleMerqurius = 0.0;
+float angleVenus = 0.0;
+float angleBumi = 0.0;
+float angleMars = 0.0;
+int currentPOV = 0;
+
+float radiusMerqurius = 0.2;
+float radiusVenus = 0.2;
+float radiusBumi = 0.2;
+float radiusMars = 0.15;
+
+float xPosMerqurius = 2.0;
+float xPosVenus = 3.0;
+float xPosBumi = 4.0;
+float xPosMars = 5.0;
+
+void display();
+void initLighting();
+void LingkaranUtama(float radius, float r, float g, float b);
+void myKeyboard(unsigned char key, int x, int y);
+void init();
+void timer(int value);
+void drawStars(int numStars);
+
+void initLighting()
+{
+    GLfloat light_position[] = {0.0, 8.0, 0.0, 1.0};
+    GLfloat light_ambient[] = {0.3, 0.3, 0.0, 1.0};
+    GLfloat light_diffuse[] = {1.0, 1.0, 1.0, 1.0};
+    GLfloat light_specular[] = {1.0, 1.0, 0.0, 1.0};
+
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+}
+
+void LingkaranUtama(float radius, float r, float g, float b)
+{
+    glColor3ub(r, g, b);
+    glutSolidSphere(radius, 50, 50);
+}
+
+void drawStars(int numStars)
+{
+    glDisable(GL_LIGHTING); // Bintang tidak memerlukan pencahayaan
+    glPointSize(2.0);
+    glBegin(GL_POINTS);
+    for (int i = 0; i < numStars; i++)
+    {
+        // Menghasilkan bintang hanya dalam 2D (x dan y tetap acak, z = 0)
+        float x = ((rand() % 200) - 100) / 10.0f;  // Koordinat x acak dalam rentang -10 hingga 10
+        float y = ((rand() % 200) - 100) / 10.0f;  // Koordinat y acak dalam rentang -10 hingga 10
+        glColor3ub(255, 255, 255);  // Warna bintang putih
+        glVertex3f(x, y, 0.0f); // Menggambar titik bintang pada bidang XY (z = 0)
+    }
+    glEnd();
+    glEnable(GL_LIGHTING);
+}
+
+void display()
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
+
+    if (currentPOV == 0)
+    {
+        gluLookAt(0.0, 0.0, 10.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    }
+    else if (currentPOV == 1)
+    {
+        gluLookAt(0.0, 8.0, 25.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0);
+    }
+
+    drawStars(500); // Menambahkan bintang
+
+    // Sebagai matahari
+    glPushMatrix();
+    glColor3f(1.0, 1.0, 0.0);
+    LingkaranUtama(0.9, 255, 255, 0.0);
+    glPopMatrix();
+
+    // Merurius
+    glPushMatrix();
+    angleMerqurius += 0.2;
+    glRotatef(angleMerqurius, 0.0, 1.0, 0.0);
+    glTranslatef(xPosMerqurius, 0.0, 0.0);
+    LingkaranUtama(radiusMerqurius, 111.0, 0.0, 255.0);
+    glPopMatrix();
+
+    // Venus
+    glPushMatrix();
+    angleVenus += 0.15;
+    glRotatef(angleVenus, 0.0, 1.0, 0.0);
+    glTranslatef(xPosVenus, 0.0, 0.0);
+    glColor3ub(212, 222, 0);
+    LingkaranUtama(radiusVenus, 0.0, 255.0, 0.0);
+    glPopMatrix();
+
+    // Bumi
+    glPushMatrix();
+    angleBumi += 0.1;
+    glRotatef(angleBumi, 0.0, 1.0, 0.0);
+    glTranslatef(xPosBumi, 0.0, 0.0);
+    glColor3ub(0, 0, 255);
+    LingkaranUtama(radiusBumi, 0.0, 0.0, 255.0);
+
+    // Bulan
+    glPushMatrix();
+    glRotatef(angleBumi, 0.0, 1.0, 0.0);
+    glTranslatef(0.4, 0.0, 0.0);
+    glColor3ub(232, 222, 232);
+    LingkaranUtama(0.1, 0.0, 0.0, 255.0);
+    glPopMatrix();
+
+    glPopMatrix();
+
+    // Mars
+    glPushMatrix();
+    angleMars += 0.05;
+    glRotatef(angleMars, 0.0, 1.0, 0.0);
+    glTranslatef(xPosMars, 0.0, 0.0);
+    LingkaranUtama(radiusMars, 128.0, 0.0, 0.0);
+    glPopMatrix();
+
+    glutSwapBuffers();
+}
+
+void timer(int value)
+{
+    glutPostRedisplay();
+    glutTimerFunc(33, timer, 0); // 33ms untuk ~30 FPS
+}
+
+void myKeyboard(unsigned char key, int x, int y)
+{
+    switch (key)
+    {
+    case 'A':
+    case 'a':
+        currentPOV = 1;
+        break;
+    case 'Z':
+    case 'z':
+        currentPOV = 0;
+        break;
+
+        // Ukuran dan jarak
+    case 'M':
+        radiusMerqurius += 0.01;
+        break;
+    case 'H':
+        xPosMerqurius -= 0.1;
+        break;
+    case 'h':
+        xPosMerqurius += 0.1;
+        break;
+
+    case 'V':
+        radiusVenus += 0.01;
+        break;
+    case 'J':
+        xPosVenus -= 0.1;
+        break;
+    case 'j':
+        xPosVenus += 0.1;
+        break;
+
+    case 'B':
+        radiusBumi += 0.01;
+        break;
+    case 'K':
+        xPosBumi -= 0.1;
+        break;
+    case 'k':
+        xPosBumi += 0.1;
+        break;
+
+    case 'R':
+        radiusMars += 0.01;
+        break;
+    case 'L':
+        xPosMars -= 0.1;
+        break;
+    case 'l':
+        xPosMars += 0.1;
+        break;
+    default:
+        return;
+    }
+    glutPostRedisplay();
+}
+
+void init()
+{
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_COLOR_MATERIAL);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.0, 1.0, 1.0, 100.0);
+    glMatrixMode(GL_MODELVIEW);
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    initLighting();
+}
+
+int main(int argc, char *argv[])
+{
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    glutInitWindowSize(800, 600);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("Kelompok - 9");
+    init();
+    glutDisplayFunc(display);
+    glutKeyboardFunc(myKeyboard);
+    glutTimerFunc(33, timer, 0); // Inisialisasi timer
+    glutMainLoop();
+    return 0;
+}
