@@ -20,11 +20,10 @@ float xPosMars = 5.0;
 
 void display();
 void initLighting();
-void LingkaranUtama(float radius, float r, float g, float b);
 void myKeyboard(unsigned char key, int x, int y);
 void init();
 void timer(int value);
-void drawStars(int numStars);
+
 
 void initLighting()
 {
@@ -42,28 +41,6 @@ void initLighting()
     glEnable(GL_LIGHT0);
 }
 
-void LingkaranUtama(float radius, float r, float g, float b)
-{
-    glColor3ub(r, g, b);
-    glutSolidSphere(radius, 50, 50);
-}
-
-void drawStars(int numStars)
-{
-    glDisable(GL_LIGHTING); // Bintang tidak memerlukan pencahayaan
-    glPointSize(2.0);
-    glBegin(GL_POINTS);
-    for (int i = 0; i < numStars; i++)
-    {
-        // Menghasilkan bintang hanya dalam 2D (x dan y tetap acak, z = 0)
-        float x = ((rand() % 200) - 100) / 10.0f;  // Koordinat x acak dalam rentang -10 hingga 10
-        float y = ((rand() % 200) - 100) / 10.0f;  // Koordinat y acak dalam rentang -10 hingga 10
-        glColor3ub(255, 255, 255);  // Warna bintang putih
-        glVertex3f(x, y, 0.0f); // Menggambar titik bintang pada bidang XY (z = 0)
-    }
-    glEnd();
-    glEnable(GL_LIGHTING);
-}
 
 void display()
 {
@@ -79,55 +56,57 @@ void display()
         gluLookAt(0.0, 8.0, 25.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0);
     }
 
-    drawStars(500); // Menambahkan bintang
+
 
     // Sebagai matahari
     glPushMatrix();
-    glColor3f(1.0, 1.0, 0.0);
-    LingkaranUtama(0.9, 255, 255, 0.0);
+    glColor3ub(222, 34, 0);
+    glutSolidSphere(0.9, 50, 50); // Mengganti LingkaranUtama dengan glutSolidSphere
     glPopMatrix();
 
     // Merurius
     glPushMatrix();
-    angleMerqurius += 0.2;
+    angleMerqurius += 4.2;
     glRotatef(angleMerqurius, 0.0, 1.0, 0.0);
     glTranslatef(xPosMerqurius, 0.0, 0.0);
-    LingkaranUtama(radiusMerqurius, 111.0, 0.0, 255.0);
+    glColor3ub(87, 93, 93);
+    glutSolidSphere(radiusMerqurius, 50, 50); // Mengganti LingkaranUtama dengan glutSolidSphere
     glPopMatrix();
 
     // Venus
     glPushMatrix();
-    angleVenus += 0.15;
+    angleVenus += 3.15;
     glRotatef(angleVenus, 0.0, 1.0, 0.0);
     glTranslatef(xPosVenus, 0.0, 0.0);
-    glColor3ub(212, 222, 0);
-    LingkaranUtama(radiusVenus, 0.0, 255.0, 0.0);
+    glColor3ub(255, 127, 80);
+    glutSolidSphere(radiusVenus, 50, 50); // Mengganti LingkaranUtama dengan glutSolidSphere
     glPopMatrix();
 
     // Bumi
     glPushMatrix();
-    angleBumi += 0.1;
+    angleBumi += 2.10;
     glRotatef(angleBumi, 0.0, 1.0, 0.0);
     glTranslatef(xPosBumi, 0.0, 0.0);
-    glColor3ub(0, 0, 255);
-    LingkaranUtama(radiusBumi, 0.0, 0.0, 255.0);
+    glColor3ub(0, 161, 241);
+    glutSolidSphere(radiusBumi, 50, 50); // Mengganti LingkaranUtama dengan glutSolidSphere
 
     // Bulan
     glPushMatrix();
     glRotatef(angleBumi, 0.0, 1.0, 0.0);
     glTranslatef(0.4, 0.0, 0.0);
-    glColor3ub(232, 222, 232);
-    LingkaranUtama(0.1, 0.0, 0.0, 255.0);
+    glColor3ub(207, 207, 207);
+    glutSolidSphere(0.1, 50, 50); // Mengganti LingkaranUtama dengan glutSolidSphere
     glPopMatrix();
 
     glPopMatrix();
 
     // Mars
     glPushMatrix();
-    angleMars += 0.05;
+    angleMars += 1.10;
     glRotatef(angleMars, 0.0, 1.0, 0.0);
     glTranslatef(xPosMars, 0.0, 0.0);
-    LingkaranUtama(radiusMars, 128.0, 0.0, 0.0);
+    glColor3ub(223, 129, 129);
+    glutSolidSphere(radiusMars, 50, 50); // Mengganti LingkaranUtama dengan glutSolidSphere
     glPopMatrix();
 
     glutSwapBuffers();
@@ -136,7 +115,7 @@ void display()
 void timer(int value)
 {
     glutPostRedisplay();
-    glutTimerFunc(33, timer, 0); // 33ms untuk ~30 FPS
+    glutTimerFunc(30, timer, 0); 
 }
 
 void myKeyboard(unsigned char key, int x, int y)
@@ -156,6 +135,9 @@ void myKeyboard(unsigned char key, int x, int y)
     case 'M':
         radiusMerqurius += 0.01;
         break;
+    case 'm':
+        radiusMerqurius = fmax(0.01, radiusMerqurius - 0.01);
+        break;
     case 'H':
         xPosMerqurius -= 0.1;
         break;
@@ -165,6 +147,9 @@ void myKeyboard(unsigned char key, int x, int y)
 
     case 'V':
         radiusVenus += 0.01;
+        break;
+    case 'v':
+        radiusVenus = fmax(0.01, radiusVenus - 0.01);
         break;
     case 'J':
         xPosVenus -= 0.1;
@@ -176,6 +161,9 @@ void myKeyboard(unsigned char key, int x, int y)
     case 'B':
         radiusBumi += 0.01;
         break;
+    case 'b':
+        radiusBumi = fmax(0.01, radiusBumi - 0.01);
+        break;
     case 'K':
         xPosBumi -= 0.1;
         break;
@@ -185,6 +173,9 @@ void myKeyboard(unsigned char key, int x, int y)
 
     case 'R':
         radiusMars += 0.01;
+        break;
+    case 'r':
+        radiusMars = fmax(0.01, radiusMars - 0.01);
         break;
     case 'L':
         xPosMars -= 0.1;
@@ -220,7 +211,7 @@ int main(int argc, char *argv[])
     init();
     glutDisplayFunc(display);
     glutKeyboardFunc(myKeyboard);
-    glutTimerFunc(33, timer, 0); // Inisialisasi timer
+    glutTimerFunc(30, timer, 0); // Inisialisasi timer
     glutMainLoop();
     return 0;
 }
