@@ -179,7 +179,7 @@ void myKeyboard(unsigned char key, int x, int y)
     case 'r': radiusMars -= 0.01; break;
     case 'L': xPosMars -= 0.1; break;
     case 'l': xPosMars += 0.1; break;
-    case 'C': case 'c': showCartecius = !showCartecius; break; // Toggle garis kartesius
+    case 'C': case 'c': showCartecius = !showCartecius; break;
     default: return;
     }
     glutPostRedisplay();
