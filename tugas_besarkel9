@@ -6,8 +6,7 @@ const int NUM_STARS = 20;
 float stars[NUM_STARS][3];
 int POV = 0;
 
-bool showCartecius = true; // Variabel untuk mengatur visibilitas garis kartesius
-
+bool showCartecius = true; 
 float angleMerqurius = 0.0;
 float angleVenus = 0.0;
 float angleBumi = 0.0;
@@ -208,7 +207,7 @@ int main(int argc, char *argv[])
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(800, 600);
     glutInitWindowPosition(100, 100);
-    glutCreateWindow("Simulasi Tata Surya");
+    glutCreateWindow("Tata Surya kelompok 9");
     init();
     glutDisplayFunc(display);
     glutKeyboardFunc(myKeyboard);
